@@ -8,6 +8,27 @@ const readTalkersAll = async () => {
   return JSON.parse(data);
 };
 
+const writeTalkerFile = async (content) => fs
+  .writeFile(join(__dirname, PATH), JSON.stringify(content, null, 2));
+
+const addingNewTalker = async (talker) => {
+  const data = await readTalkersAll();
+  const talkerId = data
+    .reduce((talk, { id }) => (id > talk ? id : talk), 0);
+
+  const newTalker = {
+    id: talkerId + 1,
+    ...talker,
+  };
+
+  data.push(newTalker);
+
+  await writeTalkerFile(data);
+
+  return newTalker;
+};
+
 module.exports = {
   readTalkersAll,
+  addingNewTalker,
 };

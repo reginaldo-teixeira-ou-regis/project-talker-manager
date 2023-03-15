@@ -1,7 +1,7 @@
 const express = require('express');
 
-const emailValidation = require('../middlewares/emailValidation');
-const passwordValidation = require('../middlewares/passwordValidation');
+const emailValidation = require('../middlewares/login/emailValidation');
+const passwordValidation = require('../middlewares/login/passwordValidation');
 
 const generateToken = require('../utils/generateToken');
 

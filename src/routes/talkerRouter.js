@@ -1,5 +1,13 @@
 const express = require('express');
-const { readTalkersAll } = require('../utils/fs/index');
+
+const tokenValidation = require('../middlewares/talker/tokenValidation');
+const nameValidation = require('../middlewares/talker/nameValidation');
+const ageValidation = require('../middlewares/talker/ageValidation');
+const talkValidation = require('../middlewares/talker/talkValidation');
+const watchedAtValidation = require('../middlewares/talker/watchedAtValidation');
+const rateValidation = require('../middlewares/talker/rateValidation');
+
+const { readTalkersAll, addingNewTalker } = require('../utils/fs/index');
 
 const router = express.Router();
 
@@ -22,6 +30,28 @@ router.get('/:id', async (req, res) => {
   }
 
   return res.status(200).json(talkerPerson);
+});
+
+router.post('/',
+  tokenValidation,
+  nameValidation,
+  ageValidation,
+  talkValidation,
+  watchedAtValidation,
+  rateValidation,
+  async (req, res) => {
+  const { name, age, talk: { watchedAt, rate } } = req.body;
+
+  const newTalker = await addingNewTalker({
+    name,
+    age,
+    talk: {
+      watchedAt,
+      rate,
+    },
+  });
+
+  return res.status(201).json(newTalker);
 });
 
 module.exports = router;
