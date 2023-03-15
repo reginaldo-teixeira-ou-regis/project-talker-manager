@@ -18,6 +18,16 @@ const router = express.Router();
 
 router.use(express.json());
 
+router.get('/search', tokenValidation, async (req, res) => {
+  const searchTerm = req.query.q;
+  let filteredTalkers = await readTalkers();
+  if (searchTerm && searchTerm.trim() !== '') {
+    filteredTalkers = filteredTalkers.filter((talker) => talker.name.toLowerCase()
+      .includes(searchTerm.toLowerCase()));
+  }
+  res.status(200).json(filteredTalkers);
+});
+
 router.get('/', async (_req, res) => {
   const data = await readTalkers();
 
