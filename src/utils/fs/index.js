@@ -35,13 +35,31 @@ const updateTalker = async (id, { name, age, talk }) => {
     return false;
   }
 
-  const editData = data.map((talkPerson) => ((talkPerson.id === id)
+  const editData = data
+    .map((talkPerson) => ((talkPerson.id === id)
     ? { id, name, age, talk }
     : talkPerson));
 
   await writeTalker(editData);
 
   return { id, name, age, talk };
+};
+
+const updateTalkerRate = async (id, rate) => {
+  const data = await readTalkers();
+
+  if (!data.some((person) => person.id === id)) {
+    return false;
+  }
+
+  const editData = data
+    .map((talkPerson) => ((talkPerson.id === id)
+    ? { ...talkPerson, talk: { ...talkPerson.talk, rate } }
+    : talkPerson));
+
+  await writeTalker(editData);
+
+  return true;
 };
 
 const deleteTalker = async (id) => {
@@ -63,4 +81,5 @@ module.exports = {
   addingNewTalker,
   updateTalker,
   deleteTalker,
+  updateTalkerRate,
 };

@@ -7,11 +7,14 @@ const talkValidation = require('../middlewares/talker/talkValidation');
 const watchedAtValidation = require('../middlewares/talker/watchedAtValidation');
 const rateValidation = require('../middlewares/talker/rateValidation');
 
+const validRate = require('../utils/validRate');
+
 const {
   readTalkers,
   addingNewTalker,
   updateTalker,
   deleteTalker,
+  updateTalkerRate,
 } = require('../utils/fs/index');
 
 const router = express.Router();
@@ -45,6 +48,27 @@ router.get('/:id', async (req, res) => {
   }
 
   return res.status(200).json(talkerPerson);
+});
+
+router.patch('/rate/:id', tokenValidation, async (req, res) => {
+  const { id } = req.params;
+  const { rate } = req.body;
+
+  if (!rate && rate !== 0) {
+    return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
+  }
+  if (!validRate(Number(rate))) {
+    return res.status(400).json({
+      message: 'O campo "rate" deve ser um número inteiro entre 1 e 5',
+    });
+  }
+
+  const editTalker = await updateTalkerRate(Number(id), Number(rate));
+
+  if (!editTalker) {
+    return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+  }
+  return res.status(204).json();
 });
 
 router.post('/',
