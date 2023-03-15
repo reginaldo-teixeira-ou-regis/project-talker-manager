@@ -44,8 +44,23 @@ const updateTalker = async (id, { name, age, talk }) => {
   return { id, name, age, talk };
 };
 
+const deleteTalker = async (id) => {
+  const data = await readTalkers();
+
+  if (!data.some((talkPerson) => talkPerson.id === id)) {
+    return false;
+  }
+
+  const editData = data.filter((talkPerson) => talkPerson.id !== id);
+
+  await writeTalker(editData);
+
+  return true;
+};
+
 module.exports = {
   readTalkers,
   addingNewTalker,
   updateTalker,
+  deleteTalker,
 };
