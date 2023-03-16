@@ -1,10 +1,3 @@
-// const { isExists } = require('date-fns');
-
-// const validDate = (date) => {
-//   const [year, month, day] = date.split('/').reverse();
-//   return isExists(Number(year), Number(month), Number(day));
-// };
-
 const validDate = (date) => {
   const [day, month, year] = date.split('/');
   const d = new Date(year, month - 1, day);
