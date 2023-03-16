@@ -6,6 +6,7 @@ const ageValidation = require('../middlewares/talker/ageValidation');
 const talkValidation = require('../middlewares/talker/talkValidation');
 const watchedAtValidation = require('../middlewares/talker/watchedAtValidation');
 const rateValidation = require('../middlewares/talker/rateValidation');
+const { findAll } = require('../db/talkerQueryDB');
 
 const validRate = require('../utils/validRate');
 
@@ -21,20 +22,37 @@ const router = express.Router();
 
 router.use(express.json());
 
-router.get('/search', tokenValidation, async (req, res) => {
-  const searchTerm = req.query.q;
-  let filteredTalkers = await readTalkers();
-  if (searchTerm && searchTerm.trim() !== '') {
-    filteredTalkers = filteredTalkers.filter((talker) => talker.name.toLowerCase()
-      .includes(searchTerm.toLowerCase()));
-  }
-  res.status(200).json(filteredTalkers);
-});
-
 router.get('/', async (_req, res) => {
   const data = await readTalkers();
 
   return res.status(200).json(data);
+});
+
+router.get('/search', tokenValidation, async (req, res) => {
+  const searchTerm = req.query.q;
+  let data = await readTalkers();
+  if (searchTerm && searchTerm.trim() !== '') {
+    data = data.filter((talker) => talker.name.toLowerCase()
+      .includes(searchTerm.toLowerCase()));
+  }
+  res.status(200).json(data);
+});
+
+router.get('/db', async (_req, res) => {
+  const [data] = await findAll();
+  const formatData = data.map(({
+    id, name, age, talk_watched_at: watchedAt, talk_rate: rate,
+  }) => ({
+    id,
+    name,
+    age,
+    talk: {
+      watchedAt,
+      rate,
+    },
+  }));
+
+  res.status(200).json(formatData);
 });
 
 router.get('/:id', async (req, res) => {
